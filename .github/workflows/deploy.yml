@@ -14,10 +14,6 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
-defaults:
-  run:
-    working-directory: ./dash-job-viewer
-
 jobs:
   build-and-deploy:
     environment:
@@ -32,8 +28,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
-          cache-dependency-path: './dash-job-viewer/package-lock.json'
 
       - name: Install Dependencies
         run: npm install
@@ -44,7 +38,7 @@ jobs:
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dash-job-viewer/dist
+          path: ./dist
 
       - name: Deploy to GitHub Pages
         id: deployment
