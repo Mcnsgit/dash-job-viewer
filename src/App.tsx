@@ -8,7 +8,6 @@ import { ExportModal } from './components/ExportModal';
 import {
   loadAppState,
   saveAppState,
-  setJobMeta,
   DEFAULT_FILTERS,
   clearAllCachedJDs,
 } from './services/storageService';
@@ -44,16 +43,21 @@ export default function App() {
     setInitialLoaded(true);
   }, []);
 
-  // 2. Persist state changes
+  // 2. Persist state changes (Debounced to prevent locking main thread)
   useEffect(() => {
     if (!initialLoaded) return;
-    saveAppState({
-      custom_jobs: jobs,
-      job_statuses: statuses,
-      active_filters: filters,
-      selected_job_id: selectedJobId,
-      last_imported_file: fileName,
-    });
+    
+    const timeoutId = setTimeout(() => {
+      saveAppState({
+        custom_jobs: jobs,
+        job_statuses: statuses,
+        active_filters: filters,
+        selected_job_id: selectedJobId,
+        last_imported_file: fileName,
+      });
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
   }, [jobs, statuses, filters, selectedJobId, fileName, initialLoaded]);
 
   // Active selected job object
@@ -70,19 +74,34 @@ export default function App() {
 
   const handleStatusChange = (status: Exclude<JobStatus, 'all'>) => {
     if (!selectedJob) return;
-    const updated = setJobMeta(selectedJob.id, { status });
-    setStatuses({ ...updated });
+    setStatuses((prev) => {
+      const existing = prev[selectedJob.id] || { status: 'Saved', notes: '', updated_at: new Date().toISOString() };
+      return {
+        ...prev,
+        [selectedJob.id]: { ...existing, status, updated_at: new Date().toISOString() }
+      };
+    });
   };
 
   const handleQuickStatusChange = (jobId: string, status: Exclude<JobStatus, 'all'>) => {
-    const updated = setJobMeta(jobId, { status });
-    setStatuses({ ...updated });
+    setStatuses((prev) => {
+      const existing = prev[jobId] || { status: 'Saved', notes: '', updated_at: new Date().toISOString() };
+      return {
+        ...prev,
+        [jobId]: { ...existing, status, updated_at: new Date().toISOString() }
+      };
+    });
   };
 
   const handleNotesChange = (notes: string) => {
     if (!selectedJob) return;
-    const updated = setJobMeta(selectedJob.id, { notes });
-    setStatuses({ ...updated });
+    setStatuses((prev) => {
+      const existing = prev[selectedJob.id] || { status: 'Saved', notes: '', updated_at: new Date().toISOString() };
+      return {
+        ...prev,
+        [selectedJob.id]: { ...existing, notes, updated_at: new Date().toISOString() }
+      };
+    });
   };
 
   const handleFilterChange = (updates: Partial<FilterState>) => {

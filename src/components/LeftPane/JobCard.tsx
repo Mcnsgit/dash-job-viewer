@@ -88,10 +88,14 @@ export const JobCard: React.FC<JobCardProps> = ({
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-1.5 shrink-0">
           <select
             value={currentStatus}
-            onChange={(e) => onQuickStatusChange(e.target.value as Exclude<JobStatus, 'all'>)}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => {
+              e.stopPropagation();
+              onQuickStatusChange(e.target.value as Exclude<JobStatus, 'all'>);
+            }}
             className={`text-[10px] font-semibold py-0.5 px-2 rounded-full border cursor-pointer focus:outline-hidden transition shadow-2xs ${getStatusBadge(
               currentStatus
             )}`}

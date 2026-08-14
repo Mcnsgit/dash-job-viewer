@@ -508,7 +508,6 @@ export const JobDetail: React.FC<JobDetailProps> = ({
                 value={notesInput}
                 onChange={(e) => {
                   setNotesInput(e.target.value);
-                  onNotesChange(e.target.value);
                 }}
                 onBlur={handleNotesBlur}
                 placeholder="Log application notes, tailored resume keywords, recruiter contact details, questions for the interview..."
