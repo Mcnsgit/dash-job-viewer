@@ -1,0 +1,6 @@
+{
+  "name": "Dash Job Viewer",
+  "description": "Master-detail job viewer with CSV ingestion, match score analytics, client-side JD fetching, and local application tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
